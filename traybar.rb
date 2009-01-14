@@ -1,18 +1,21 @@
 require 'gtk2'
 
+
+
 module Charge
   class Icon < Gtk::StatusIcon
     
     def initialize
       @menu = Lista.new
       super()
-      set_icon_name("battery")
+      self.file = "battery/battery.svg"
+      set_icon_name("battery-low")
       signal_connect("popup-menu"){|icon, button, time|
         @menu.show_all
         @menu.popup(nil, nil, button, time)
         @menu.powersave
         @menu.performance
-        
+        @menu.freq
       }
       self.tip()
     end
@@ -38,28 +41,15 @@ module Charge
     
     def tip
       
-      #here this code do this sequence first and then the timeout
-
-      ch = `acpi -a`.chop
-      remain = ch.split(/\,/)[2] #remaning time and AC state
-      if remain == nil
-        remain = ch.split(/\,/)[1]
-      end
-      
-      check(ch.split("\n")[0].strip.split(",")[1].sub("%", "").to_i) #percentage of battery
-      self.tooltip = remain
-      
-      Gtk.timeout_add(30000) {
-        ch = `acpi -a`.chop
-        remain = ch.split(/\,/)[2] #remaning time and AC state
-        if remain == nil
-          remain = ch.split(/\,/)[1]
+      Thread.new do
+        loop do
+          ch = `acpi -a`.chop
+          check(ch.split(/\,/)[1].gsub("%", "")) #percentage of battery
+          self.tooltip = ch
+          sleep 30
         end
-        check(ch.split(/\,/)[1].gsub("%", "")) #percentage of battery
-        self.tooltip = remain
-        true
-      }
-
+      end
+    
     end
     
     #dialog to display the warning
@@ -84,15 +74,29 @@ module Charge
 
     def initialize
       super()
+
+      freq = [ 800, 1600, 1800, 1900] #frequence of the cpu
+      @u = []
       sub = Gtk::Menu.new
+      sub2 = Gtk::Menu.new
       @powersave = Gtk::MenuItem.new("powersave", true)
       @performance = Gtk::MenuItem.new("performance", true)
       principal = Gtk::ImageMenuItem.new("cpu modes")
+      secondary = Gtk::ImageMenuItem.new("cpu frequence")
+      secondary.submenu = sub2
+      
+      for i in freq
+        i = Gtk::MenuItem.new("#{i}MHz", true)
+        @u.push i
+        
+        sub2.append(i)
+      end
       principal.submenu = sub
       principal.image = Gtk::Image.new.set_icon_name("battery")
       sub.append(@powersave)
       sub.append(@performance)
       self.append(principal)
+      self.append(secondary)
     end
     
     #method to set the cpu modes
@@ -110,11 +114,19 @@ module Charge
       @performance.signal_connect("activate") do
         puts "PERFORMANCE MODE SETTED"
         `sudo cpufreq-set -g performance`
+        
+      end
+    end
+    def freq
+     
+        end
 
       end
+
     end
   end
 end
+
 
 #main program
 
