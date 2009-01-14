@@ -45,8 +45,8 @@ module Charge
       if remain == nil
         remain = ch.split(/\,/)[1]
       end
-          
-      check(ch.split(/\,/)[1].gsub("%", "")) #percentage of battery
+      
+      check(ch.split("\n")[0].strip.split(",")[1].sub("%", "").to_i) #percentage of battery
       self.tooltip = remain
       
       Gtk.timeout_add(30000) {
@@ -112,7 +112,6 @@ module Charge
         `sudo cpufreq-set -g performance`
 
       end
-
     end
   end
 end
