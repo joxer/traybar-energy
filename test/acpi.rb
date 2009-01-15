@@ -1,4 +1,4 @@
-require 'ACPI'
+require '../ACPI'
 
 a = ACPI::Get.new
 puts a.charge
