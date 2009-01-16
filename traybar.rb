@@ -6,37 +6,39 @@ module Charge
   class Icon < Gtk::StatusIcon
     
     def initialize
+      @lessthen15=false;
+      @lessthen5=false;
       @menu = Lista.new
+      
       super()
+      
       self.file = "battery/battery.svg"
       set_icon_name("battery-low")
+      
       signal_connect("popup-menu"){|icon, button, time|
         @menu.show_all
         @menu.popup(nil, nil, button, time)
-        @menu.powersave
-        @menu.performance
-        @menu.freq
-      }
+	}
       self.tip()
     end
     
     #check the battery
 
     def check(level)
-    
-      if(level == 15)
-        
-        dialog("Rimane il 15% di batteria")
+      level=level.to_i
+      
+      if(level <= 5 and !@lessthen5)
+        @lessthen5=true;
+        dialog("Sotto al 5% di batteria")
 
         set_icon_name("battery-warning")
         
-      elsif(level == 5)
-        
-        dialog("Rimane il 5% di batteria, attacca la corrente")
+      elsif(level <= 15 and !@lessthen15)
+	@lessthen15=true;
+        dialog("Rimane meno del 15% di batteria")
 
         set_icon_name("battery-low")
       end
-      
     end
     
     def tip
@@ -75,55 +77,54 @@ module Charge
     def initialize
       super()
 
-      freq = [ 800, 1600, 1800, 1900] #frequence of the cpu
-      @u = []
-      sub = Gtk::Menu.new
-      sub2 = Gtk::Menu.new
-      @powersave = Gtk::MenuItem.new("powersave", true)
-      @performance = Gtk::MenuItem.new("performance", true)
-      principal = Gtk::ImageMenuItem.new("cpu modes")
-      secondary = Gtk::ImageMenuItem.new("cpu frequence")
-      secondary.submenu = sub2
+	
+	freqsignal=[]
+	goversignal=[]
+	_goverSubMenu = Gtk::Menu.new
+	_freqSubMenu = Gtk::Menu.new
+	
+
+	governors = *open('/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors').map { |x| x.rstrip.split }
+	for i in governors
+		menuvoice = Gtk::MenuItem.new("#{i}", true)
+		_goverSubMenu.append(menuvoice)
+		menuvoice.set_name(i)
+		goversignal.push(menuvoice)
+		goversignal.last.signal_connect("activate") do |x|
+			puts "sudo cpufreq-set -g #{x.name}"
+		    
+			#~ `sudo cpufreq-set -g #{x.name}`
+		end
+	end
+	govMenu = Gtk::ImageMenuItem.new("cpu modes")
+	govMenu.image = Gtk::Image.new.set_icon_name("battery")
+	govMenu.submenu = _goverSubMenu
+	
+	self.append(govMenu)
+	
+	
+	freq= *open('/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies').map { |x| x.rstrip.split }
+	freq.collect! {|x| x.to_i/1000}
+	for i in freq
+		menuvoice = Gtk::MenuItem.new("#{i}MHz", true)
+		_freqSubMenu.append(menuvoice)
+		menuvoice.set_name(i.to_s)
+		freqsignal.push(menuvoice)
+		freqsignal.last.signal_connect("activate") do |x|
+		    puts "sudo cpufreq-set -f #{x.name}"
+		    #~ `sudo cpufreq-set -f #{x.name}`
+		end
+	end
+	
+	freqMenu = Gtk::ImageMenuItem.new("cpu frequence")
+	freqMenu.submenu = _freqSubMenu
+	self.append(freqMenu)
       
-      for i in freq
-        i = Gtk::MenuItem.new("#{i}MHz", true)
-        @u.push i
-        
-        sub2.append(i)
-      end
-      principal.submenu = sub
-      principal.image = Gtk::Image.new.set_icon_name("battery")
-      sub.append(@powersave)
-      sub.append(@performance)
-      self.append(principal)
-      self.append(secondary)
+      
     end
     
-    #method to set the cpu modes
+    #method to set the cpu model
 
-    def powersave
-        
-      @powersave.signal_connect("activate") do
-        puts "POWERSAVE MODE SETTED"
-        `sudo cpufreq-set -g powersave`
-        
-      end
-    end
-    def performance
-      
-      @performance.signal_connect("activate") do
-        puts "PERFORMANCE MODE SETTED"
-        `sudo cpufreq-set -g performance`
-        
-      end
-    end
-    def freq
-     
-        end
-
-      end
-
-    end
   end
 end
 
@@ -134,3 +135,4 @@ icon = Charge::Icon.new
 
 
 Gtk.main
+
