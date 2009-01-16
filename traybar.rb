@@ -1,10 +1,13 @@
 require 'gtk2'
-
+require 'ACPI'
 
 module Charge
   class Icon < Gtk::StatusIcon
     
     def initialize
+
+      @status = ACPI::Get.new
+
       @lessthen15=false;
       @lessthen5=false;
       @menu = Lista.new
@@ -24,33 +27,32 @@ module Charge
     #check the battery
 
     def check(level)
-	level=level.to_i
+	# level=level.to_i è inutile visto che ho messo l'opzione a intero nel file ACPI
       
-	if(level <= 5 and !@lessthen5)
+      if(level <= 5 and !@lessthen5)
 		@lessthen5=true;
-		dialog("Sotto al 5% di batteria")
-
+        dialog("Sotto al 5% di batteria")
+        
 		set_icon_name("battery-warning")
         
-	elsif(level <= 15 and !@lessthen15)
-		@lessthen15=true;
-		dialog("Rimane meno del 15% di batteria")
-
-		set_icon_name("battery-low")
+      elsif(level <= 15 and !@lessthen15)
+        @lessthen15=true;
+        dialog("Rimane meno del 15% di batteria")
+        
+        set_icon_name("battery-low")
 	end
     end
     
     def tip
       
-	Thread.new do
-		loop do
-		ch = `acpi -a`.chop
-		check(ch.split(/\,/)[1].gsub("%", "")) #percentage of battery
-		self.tooltip = ch
-		sleep 30
-		end
-	end
-    
+      Thread.new do
+        loop do
+          
+          check @status.charge(:int)
+          self.tooltip = @status.info
+          sleep 30
+        end
+      end
     end
     
     #dialog to display the warning

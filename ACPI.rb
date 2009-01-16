@@ -2,15 +2,14 @@ module ACPI
   
   class Get
     
-    def initialize
+    def info
       
-      @info = `acpi -V`.chop
+      return `acpi -V`.chop
 
     end
 
-
     def charge(rtype = :string )
-
+      @info = `acpi -V`.chop
       if rtype == :string
       return @info.split("\n")[0].split(",")[1].strip.chop.to_s
       elsif rtype == :int
@@ -18,15 +17,15 @@ module ACPI
       end
 
     end
-      
+    
     def temperature
-      
-        return @info.split("\n")[1].split(", ")[1].to_s
+      @info = `acpi -V`.chop
+      return @info.split("\n")[1].split(", ")[1].to_s
     
     end
       
     def AC_status
-      
+      @info = `acpi -V`.chop
       return @info.split("\n  ")[2].to_s
 
     end
