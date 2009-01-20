@@ -3,9 +3,7 @@ module ACPI
   class Get
     
     def info
-      
       return `acpi -V`.chop
-
     end
 
     def charge(rtype = :string )
@@ -19,15 +17,12 @@ module ACPI
     end
     
     def temperature
-      @info = `acpi -V`.chop
-      return @info.split("\n")[1].split(", ")[1].to_s
-    
+      return `acpi -tB`.chop
+      
     end
       
-    def AC_status
-      @info = `acpi -V`.chop
-      return @info.split("\n  ")[2].to_s
-
+    def ac_status
+      return `acpi -aB`.chop
     end
     
   end

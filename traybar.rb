@@ -30,16 +30,21 @@ module Charge
       # level=level.to_i è inutile visto che ho messo l'opzione a intero nel file ACPI
       
       if(level <= 5 and !@lessthen5)
-        @lessthen5=true;
+        @lessthen5=true
         dialog("Sotto al 5% di batteria")
-        
+        set_blinking(true)
         set_icon_name("battery-warning")
         
       elsif(level <= 15 and !@lessthen15)
-        @lessthen15=true;
+        @lessthen15=true
+        @lessthen5=false
+        set_blinking(false)
+
         dialog("Rimane meno del 15% di batteria")
-        
         set_icon_name("battery-low")
+      else
+        set_blinking(false)
+        @lessthen15=false
       end
     end
     
@@ -48,7 +53,7 @@ module Charge
         loop do
           check @status.charge(:int)
           self.tooltip = @status.info
-          sleep 30
+          sleep 60
         end
       end
     end
@@ -72,11 +77,14 @@ module Charge
     #menu on popup
 
     def menugovernor
+=begin
+        prova a caricare i governors da file, se non ci riesce annuncia la cosa crea il menu con i governors presi dal file ed ad ogni voce del menu associa un evento
+=end
       goversignal=[]
       _goversubmenu = Gtk::Menu.new
      
       begin
-         governors = *open('/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors').map { |x| x.rstrip.split }
+        governors = *open('/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors').map { |x| x.rstrip.split }
         for i in governors
           menuvoice = Gtk::MenuItem.new("#{i}", true)
           _goversubmenu.append(menuvoice)
@@ -99,6 +107,10 @@ module Charge
     
     
     def menufrequenzies
+      =begin
+        prova a caricare le frequenze da file, se non ci riesce annuncia la cosa crea il menu con le frequenze prese dal file ed ad ogni voce del menu associa un evento
+        =end
+
       freqsignal=[]
       _freqsubmenu = Gtk::Menu.new
       begin
@@ -117,7 +129,7 @@ module Charge
         end
       rescue
         _freqsubmenu.append(Gtk::MenuItem.new("non disponibile",true))
-         dialog "Manca il file per la lettura delle frequenze disponibili, potrebbe essere\nnecessario caricare il modulo per la gestione dello scaling"
+        dialog "Manca il file per la lettura delle frequenze disponibili, potrebbe essere\nnecessario caricare il modulo per la gestione dello scaling"
         raise("scaling_available_frequencies non disponibile")
       ensure
         return _freqsubmenu
@@ -125,6 +137,10 @@ module Charge
     end
 
     def initialize
+      =begin
+        inizializza il menu settando le voci delle frequenze dei governors e la voce quit
+        =end
+
       super()
       govmenu = Gtk::ImageMenuItem.new("cpu modes")
       govmenu.image = Gtk::Image.new.set_icon_name("battery")
