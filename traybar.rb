@@ -60,9 +60,9 @@ module Charge
     
     #dialog to display the warning
 
-    def dialog(message)
+    def dialog(message, obj = "WARNING")
       
-      dialog = Gtk::Dialog.new("WARNING".to_s, nil, Gtk::Dialog::DESTROY_WITH_PARENT,    [ Gtk::Stock::OK, Gtk::Dialog::RESPONSE_NONE ])
+      dialog = Gtk::Dialog.new("#{obj}".to_s, nil, Gtk::Dialog::DESTROY_WITH_PARENT,    [ Gtk::Stock::OK, Gtk::Dialog::RESPONSE_NONE ])
       dialog.signal_connect('response'){ dialog.destroy }
       dialog.vbox.add(Gtk::Label.new(message))
       dialog.show_all
@@ -107,9 +107,9 @@ module Charge
     
     
     def menufrequenzies
-      =begin
+=begin
         prova a caricare le frequenze da file, se non ci riesce annuncia la cosa crea il menu con le frequenze prese dal file ed ad ogni voce del menu associa un evento
-        =end
+=end
 
       freqsignal=[]
       _freqsubmenu = Gtk::Menu.new
@@ -137,27 +137,43 @@ module Charge
     end
 
     def initialize
-      =begin
+=begin
         inizializza il menu settando le voci delle frequenze dei governors e la voce quit
-        =end
+=end
 
       super()
+      
+      #governator menu
+      
       govmenu = Gtk::ImageMenuItem.new("cpu modes")
       govmenu.image = Gtk::Image.new.set_icon_name("battery")
       govmenu.submenu = menugovernor()
-      freqmenu = Gtk::ImageMenuItem.new("cpu frequence")
+      
+      #frequence menu
+
+      freqmenu = Gtk::ImageMenuItem.new("cpu frequencies")
       freqmenu.submenu = menufrequenzies()
+
+      #quit button
+
       quit=Gtk::MenuItem.new("Quit",true)
-      quit.signal_connect("activate") do Gtk.main_quit end
+      quit.signal_connect("activate"){ Gtk.main_quit}
+
+      #about button
+
+      about = Gtk::MenuItem.new("About us", true)
+      about.signal_connect("activate"){ dialog("Traybar-power\nCreated by joxer and Nss\nrealeased on the GNU public license.\nIf you want to join to the develop team send an email to kell.92.k@gmail.com", "Credits")}
+
       self.append(govmenu)
       self.append(freqmenu)
+      self.append(about)
       self.append(quit)
     end
     
     #method to set the cpu model
-    def dialog(message)
+    def dialog(message, obj = "WARNING")
 
-      dialog = Gtk::Dialog.new("WARNING".to_s, nil, Gtk::Dialog::DESTROY_WITH_PARENT,    [ Gtk::Stock::OK, Gtk::Dialog::RESPONSE_NONE ])
+      dialog = Gtk::Dialog.new("#{obj}".to_s, nil, Gtk::Dialog::DESTROY_WITH_PARENT,    [ Gtk::Stock::OK, Gtk::Dialog::RESPONSE_NONE ])
       dialog.signal_connect('response'){ dialog.destroy }
       dialog.vbox.add(Gtk::Label.new(message))
       dialog.show_all
