@@ -30,10 +30,10 @@ module Charge
       self.tip()
     end
     
-    #check the battery
+    #check the battery level
 
     def check(level)
-      # level=level.to_i è inutile visto che ho messo l'opzione a intero nel file ACPI
+    
       
       if(level <= 5 and !@lessthen5)
         @lessthen5=true
@@ -65,7 +65,7 @@ module Charge
     end
     
     #dialog to display the warning
-
+    #aggiunto obj, non si sa mai :p
     def dialog(message, obj = "WARNING")
       
       dialog = Gtk::Dialog.new("#{obj}".to_s, nil, Gtk::Dialog::DESTROY_WITH_PARENT,    [ Gtk::Stock::OK, Gtk::Dialog::RESPONSE_NONE ])
@@ -113,6 +113,7 @@ module Charge
     
     
     def menufrequenzies
+
 =begin
         prova a caricare le frequenze da file, se non ci riesce annuncia la cosa crea il menu con le frequenze prese dal file ed ad ogni voce del menu associa un evento
 =end
@@ -176,7 +177,8 @@ module Charge
       self.append(quit)
     end
     
-    #method to set the cpu model
+    #warning message
+    #added obj
     def dialog(message, obj = "WARNING")
 
       dialog = Gtk::Dialog.new("#{obj}".to_s, nil, Gtk::Dialog::DESTROY_WITH_PARENT,    [ Gtk::Stock::OK, Gtk::Dialog::RESPONSE_NONE ])
@@ -190,8 +192,10 @@ end
 
 #main program
 
-icon = Charge::Icon.new
+if `which acpi` != ""
+  icon = Charge::Icon.new
+  Gtk.main
+else
+  puts "You haven't installed acpi.\nInstall acpi first and then run this software"
 
-
-Gtk.main
-
+end
