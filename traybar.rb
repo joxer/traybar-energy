@@ -1,6 +1,6 @@
 require 'gtk2'
 require 'ACPI'
-
+require 'icon-name'
 module Charge
   class Icon < Gtk::StatusIcon
     
@@ -14,8 +14,14 @@ module Charge
       
       super()
       
-      self.file = "battery/battery.svg"
-      set_icon_name("battery-low")
+      Thread.new do 
+        loop do
+          self.set_file("#{IconName::GetIcon.new.get_icon}")
+          
+          sleep 60
+        end
+        
+      end
       
       signal_connect("popup-menu"){|icon, button, time|
         @menu.show_all

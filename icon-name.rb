@@ -8,7 +8,7 @@ module IconName
 
     def initialize
       
-      @status = { '100' => 'battery-full.svg', '75' => 'battery-75.svg' , '50' => 'battery/battery-50.svg', '25' => 'battery/battery-25.svg', 'empty' => 'battery/battery-emptyalert0.svg' }      
+      @status = { '100' => './battery/battery-full.svg', '75' => './battery/battery-75.svg' , '50' => './battery/battery-50.svg', '25' => './battery/battery-25.svg', 'empty' => './battery/battery-emptyalert0.svg' }      
     end
 
     #da rivedere
