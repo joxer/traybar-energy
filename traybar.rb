@@ -39,7 +39,6 @@ module Charge
         @lessthen5=true
         dialog("Sotto al 5% di batteria")
         set_blinking(true)
-        set_icon_name("battery-warning")
         
       elsif(level <= 15 and !@lessthen15)
         @lessthen15=true
@@ -47,7 +46,6 @@ module Charge
         set_blinking(false)
 
         dialog("Rimane meno del 15% di batteria")
-        set_icon_name("battery-low")
       else
         set_blinking(false)
         @lessthen15=false

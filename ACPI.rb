@@ -7,25 +7,42 @@ module ACPI
     end
 
     def charge(rtype = :string )
-      @info = `acpi -V`.chop
+      charge = `acpi -b`.chop
+      charge =~ /Battery 0\D+(\d+)%.*/
+      return -1 if $1 == nil	
       if rtype == :string
-      return @info.split("\n")[0].split(",")[1].strip.chop.to_s
+      	return $1.to_s
       elsif rtype == :int
-        return @info.split("\n")[0].split(",")[1].strip.chop.to_i
+        return $1.to_i
       end
 
     end
     
     def temperature
-      return `acpi -tB`.chop
-      
+      temperature=`acpi -tB`.chop
+      temperature=~/Thermal 0\D+(\d+.\d+).*/
+      return -1 if $1==nil
+      return $1
     end
       
     def ac_status
-      return `acpi -aB`.chop
+      ac_status=`acpi -aB`.chop
+      ac_status=~/AC Adapter 0: (\w+-\w+)/
+      return -1 if $1==nil
+      return $1
     end
     
   end
 
+
+end
+
+if __FILE__ == $0
+	Test=ACPI::Get.new
+	puts "charge in int is: #{Test.charge(:int)}"
+	puts "charge in string in: #{Test.charge(:string)}"
+	puts "AC-status: #{Test.ac_status}"
+	puts "Temperature: #{Test.temperature}"
+	puts "info : #{Test.info}"
 
 end
