@@ -7,7 +7,7 @@ module IconName
   class GetIcon
 
     def initialize
-      @status = ["battery-25.svg","battery-25.svg","battery-50.svg","battery-75.svg","battery-full.svg","battery-low-png.svg","battery-emptyalert0.svg","battery-nostatus.svg"] 
+      @icons = ["battery-25.svg","battery-25.svg","battery-50.svg","battery-75.svg","battery-full.svg","battery-low-png.svg","battery-emptyalert0.svg","battery-nostatus.svg"] 
     end
 
     #da rivedere
@@ -19,11 +19,11 @@ module IconName
 	basedir="./battery/"
 	
 	#alert status
-	return  basedir+@status[7] if charge <= 0
-	return  basedir+@status[6] if charge <= 10
-	return  basedir+@status[5] if charge <= 15
+	return  basedir+@icons[7] if charge <= 0
+	return  basedir+@icons[6] if charge <= 10
+	return  basedir+@icons[5] if charge <= 15
       
-	return  basedir+@status[charge/25] 
+	return  basedir+@icons[charge/25] 
     end
 
   end

@@ -8,7 +8,8 @@ module Charge
     def initialize
 
       @status = ACPI::Get.new
-
+      
+      @nobatterydata=false
       @lessthen15=false;
       @lessthen5=false;
       @menu = Lista.new
@@ -34,23 +35,33 @@ module Charge
     #check the battery level
 
     def check(level)
-    
-      
-      if(level <= 5 and !@lessthen5)
-        @lessthen5=true
-        dialog("Sotto al 5% di batteria")
-        set_blinking(true)
-        
-      elsif(level <= 15 and !@lessthen15)
-        @lessthen15=true
-        @lessthen5=false
-        set_blinking(false)
-
-        dialog("Rimane meno del 15% di batteria")
-      else
-        set_blinking(false)
-        @lessthen15=false
-      end
+	puts level
+      case level
+	      when -1
+			if !@nobatterydata
+				@nobatterydata=true
+				dialog("Impossibile leggere i dati della batteria")
+			end
+	      when 0..5
+			if !@lessthen5
+				@lessthen5=true
+				@nobatterydata=false
+				dialog("Sotto al 5% di batteria")
+				set_blinking(true)
+			end
+	      when 6..15
+			if !@lessthen15
+				@lessthen15=true
+				@lessthen5=false
+				set_blinking(false)
+				dialog("Rimane meno del 15% di batteria")
+			end
+		else
+			set_blicking(false)
+			@lessthen5=false
+			@nobatterydata=false
+			@lessthen15=false
+	end
     end
     
     def tip
@@ -158,6 +169,7 @@ module Charge
       #frequence menu
 
       freqmenu = Gtk::ImageMenuItem.new("cpu frequencies")
+      freqmenu.image = Gtk::Image.new.set_icon_name("battery")
       freqmenu.submenu = menufrequenzies()
 
       #quit button
@@ -196,5 +208,4 @@ if `which acpi` != ""
   Gtk.main
 else
   puts "You haven't installed acpi.\nInstall acpi first and then run this software"
-
 end
