@@ -44,5 +44,4 @@ if __FILE__ == $0
 	puts "AC-status: #{Test.ac_status}"
 	puts "Temperature: #{Test.temperature}"
 	puts "info : #{Test.info}"
-
 end

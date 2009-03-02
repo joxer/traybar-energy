@@ -7,27 +7,32 @@ module IconName
   class GetIcon
 
     def initialize
-      
-      @status = { '100' => './battery/battery-full.svg', '75' => './battery/battery-75.svg' , '50' => './battery/battery-50.svg', '25' => './battery/battery-25.svg', '15' => './battery/battery-low-png.svg', 'empty' => './battery/battery-emptyalert0.svg' }      
+      @status = ["battery-25.svg","battery-25.svg","battery-50.svg","battery-75.svg","battery-full.svg","battery-low-png.svg","battery-emptyalert0.svg","battery-nostatus.svg"] 
     end
 
     #da rivedere
 
     def get_icon
+	charge=Get.new.charge(:int)
+	#only for test, tray ruby icon-name.rb charge
+	charge=ARGV.first.to_i if __FILE__ == $0
+	basedir="./battery/"
+	
+	#alert status
+	return  basedir+@status[7] if charge <= 0
+	return  basedir+@status[6] if charge <= 10
+	return  basedir+@status[5] if charge <= 15
       
-      return @status['100'] if Get.new.charge(:int) > 75 && Get.new.charge(:int) <= 100
-
-      return @status['75'] if Get.new.charge(:int) > 50 && Get.new.charge(:int) <= 75
-
-      return @status['50'] if Get.new.charge(:int) > 25 && Get.new.charge(:int) <= 50
-      
-      return @status['25'] if Get.new.charge(:int) < 25 && @info.charge(:int) > 10
-      return @status['15'] if Get.new.charge(:int) < 15 && @info.charge(:int) > 10
-      return @status['empty'] if Get.new.charge(:int) <= 10
-
+	return  basedir+@status[charge/25] 
     end
 
   end
 
 
+end
+
+
+if __FILE__==$0
+	Iconclass=IconName::GetIcon.new
+	puts Iconclass.get_icon
 end

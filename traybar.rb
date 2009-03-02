@@ -1,6 +1,7 @@
 require 'gtk2'
 require 'ACPI'
 require 'icon-name'
+
 module Charge
   class Icon < Gtk::StatusIcon
     
