@@ -1,6 +1,6 @@
 module ACPI
   
-  class Get
+  class AcpiData
     
     def info
       return `acpi -V`.chop
@@ -24,7 +24,14 @@ module ACPI
       return -1 if $1==nil
       return $1
     end
-      
+    
+    def on_ac?
+	ac_status=`acpi -aB`.chop
+        ac_status=~/AC Adapter 0: (\w+-\w+)/
+        return ac_status=="on-line"
+    end	
+	    
+	    
     def ac_status
       ac_status=`acpi -aB`.chop
       ac_status=~/AC Adapter 0: (\w+-\w+)/
@@ -42,6 +49,7 @@ if __FILE__ == $0
 	puts "charge in int is: #{Test.charge(:int)}"
 	puts "charge in string in: #{Test.charge(:string)}"
 	puts "AC-status: #{Test.ac_status}"
+	puts "AC-status: #{Test.ac_status?}"
 	puts "Temperature: #{Test.temperature}"
 	puts "info : #{Test.info}"
 end
