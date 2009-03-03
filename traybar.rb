@@ -12,7 +12,7 @@ module Charge
 		def initialize
 
 			@status = ACPI::AcpiData.new
-			
+			icon=IconName::GetIcon.new
 						
 			@nobatterydata=false
 			@lessthen15=false;
@@ -23,7 +23,7 @@ module Charge
 	  
 			Thread.new do 
 				loop do
-					self.set_file("#{IconName::GetIcon.new.get_icon}") 
+					self.set_file("#{icon.get_icon}") 
 					sleep 60
 				end
 			end
