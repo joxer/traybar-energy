@@ -45,11 +45,11 @@ module ACPI
 end
 
 if __FILE__ == $0
-	Test=ACPI::Get.new
+	Test= ACPI::AcpiData.new
 	puts "charge in int is: #{Test.charge(:int)}"
 	puts "charge in string in: #{Test.charge(:string)}"
 	puts "AC-status: #{Test.ac_status}"
-	puts "AC-status: #{Test.ac_status?}"
+
 	puts "Temperature: #{Test.temperature}"
 	puts "info : #{Test.info}"
 end
