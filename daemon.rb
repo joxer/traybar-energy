@@ -17,7 +17,7 @@ class Daemon
     
      File.open("/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies", "r") do |s|
       
-      gover = s.readline.split(" ")
+      freq = s.readline.split(" ")
       s.close
     end
     
@@ -33,6 +33,7 @@ class Daemon
       freq_hash[s] = freq[s]
     end
     
+    p freq
     
     File.open("/tmp/daemon.tmp", "w") do |s|
       s.puts Process.pid
@@ -40,18 +41,18 @@ class Daemon
       
     end
     
-    trap(10) do
+    trap(30) do
 
       
-      puts "cpufreq-set -f #{gover_hash[self.command.to_i]}"
+      puts "cpufreq-set -f #{self.command.to_i}"
     end
     
-    trap(30) do 
+    trap(10) do 
       #define operation here
       
     
       
-      puts "cpufreq-set -g #{gover_hash[self.command.to_i]}"
+      puts "cpufreq-set -g #{self.command.to_i}"
     end
     
     sleep 3000
