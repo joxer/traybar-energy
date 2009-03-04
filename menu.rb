@@ -19,10 +19,11 @@ class Menu < Gtk::Menu
         menuvoice.set_name(g.to_s)
         goversignal.push(menuvoice)
         goversignal.last.signal_connect("activate") do |x|
-          `kill -30 #{$pid}`
+           `kill -30 #{$pid}`
           sock = Socket.new("localhost", 5000)
           sock.send("#{x}", 0)
           sock.close
+          
         end
       end
     end
@@ -52,9 +53,10 @@ class Menu < Gtk::Menu
         freqsignal.push(menuvoice)
         freqsignal.last.signal_connect("activate") do |x|
          
-          #
-          # FREQUENCE MUST DO ON A DIFFERENT SIGNAL
-          #
+          `kill -10 #{$pid}`
+          sock = Socket.new("localhost", 5000)
+          sock.send("#{x}", 0)
+          sock.close
 
         end
       end

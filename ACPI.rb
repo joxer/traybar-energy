@@ -1,3 +1,4 @@
+
 module ACPI
   
   class AcpiData
