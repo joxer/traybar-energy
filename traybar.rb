@@ -90,11 +90,17 @@ end
 
 #main program
 if __FILE__==$0
-	if (`which acpi` == "")
-		puts "You haven't installed acpi.\nInstall acpi first and then run this software"
-	else
-                $pid = File.new("/tmp/daemon.tmp", "r").readlines[0]
-		icon = Charge::Icon.new
-		Gtk.main
-	end
+  if (`which acpi` == "")
+    puts "You haven't installed acpi.\nInstall acpi first and then run this software"
+  else
+    begin
+      File.new("/tmp/daemon.tmp", "r")
+      $pid = File.new("/tmp/daemon.tmp", "r").readlines[0]
+      icon = Charge::Icon.new
+      Gtk.main
+      
+    rescue
+      puts "run the daemon first"
+    end
+  end
 end

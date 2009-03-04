@@ -68,11 +68,17 @@ class Menu < Gtk::Menu
         menuvoice.set_name(g.to_s)
         goversignal.push(menuvoice)
         goversignal.last.signal_connect("activate") do |x|
+           
+           #What i do here
+           # i send the signal to daemon to open the socket
+           # then the program send the status
+           # i put a control to the string to send to daemon for security
+
            `kill -30 #{$pid}`
-          sock = TCPSocket.new("localhost", 5000)
-          sock.send("#{g}", 0)
-          sock.close
-          
+           sock = TCPSocket.new("localhost", 5000)
+           sock.send("#{g}", 0)
+           sock.close
+           
         end
       end
     end
