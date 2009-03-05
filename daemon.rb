@@ -1,10 +1,12 @@
+#!/usr/bin/ruby
+
 require 'socket'
 
 class Daemon
   
   trap(2) do
     
-    `rm /tmp/daemon.tmp`
+    `rm /var/run/traybat.tmp`
     exit(0)
 
   end
@@ -12,12 +14,12 @@ class Daemon
 
   trap(9) do
     
-    `rm /tmp/daemon.tmp`
+    `rm /var/run/traybat.tmp`
     exit(0)
   end
 
   def self.new_daemon
-    File.open("/tmp/daemon.tmp", "w") do |s|
+    File.open("/var/run/traybat.tmp", "w") do |s|
       s.puts Process.pid
       s.close
       
